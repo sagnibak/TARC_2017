@@ -10,10 +10,10 @@ Campolindo TARC team.
 
 //const int RX_PIN = 5;                                    // Arduino RX, connects to bluetooth TX, for software serial ONLY
 //const int TX_PIN = 6;                                    // Arduino TX, connects to bluetooth RX, may need a voltage divider or level shifter, for software serial ONLY
-const int RELEASE_ALTD = 1;                                 // Altitude at which parachute should be released, in units metres
-const int SERVO_PARA_CLOSED = 1;                            // servo position at which the parachute is locked
-const int SERVO_PARA_RELEASED = 1;                          // servo position at which the parachute is released
-const int SERVO_PIN = 1;                                    // pin to which the servo signal is attahced
+const int RELEASE_ALTD = ;                                 // Altitude at which parachute should be released, in units metres
+const int SERVO_PARA_CLOSED = ;                            // servo position at which the parachute is locked
+const int SERVO_PARA_RELEASED = ;                          // servo position at which the parachute is released
+const int SERVO_PIN = 3;                                   // pin to which the servo signal is attahced
 
 float altitude;                                            // current altitude, read from the sensor
 int servoPosition;                                         // position of the servo
@@ -25,25 +25,25 @@ Servo paraServo;                                           // Servo object to co
 //SoftwareSerial bt(RX_PIN, TX_PIN);                       // for software serial, if needed
 
 void setup() {
-    Serial.begin(9600);                                    // start bluetooth serial communication
+    Serial.begin(115200);                                  // start bluetooth serial communication
 
     paraServo.attach(SERVO_PIN);                           // connect the servo to SERVO_PIN
     paraServo.write(SERVO_PARA_CLOSED);                    // make sure that the parachute is initially closed
-
-    // debug messages
-    Serial.println("Rocket initialized.");                 
-    Serial.print("Parachute released: ");
+                                                                
+    // debug messages                                                                   
+    Serial.println("Rocket initialized.");                           
+    Serial.print("Parachute released: ");                       
     Serial.println(isParaReleased);                        // should say `false`
 
     // if we need to use software serial for bluetooth
-//    bt.begin(9600); 
+//    bt.begin(115200); 
 //    bt.println("Rocket initialized.");
 }
 
 void loop() {
-    // check if the barometer is connected
+    // check if the altimeter is connected
     if (! altimeter.begin()) {
-        Serial.println("Couldnt find sensor");
+        Serial.println("Couldnt altimeter");
         return;
     }
 
@@ -58,7 +58,7 @@ void loop() {
         isParaReleased = true;                              // tell the code that the parachute is released
         
         Serial.print("It is ");                             // a crafty debug message
-        Serial.print(isParaReleased);
+        Serial.print(isParaReleased);                       // true or false
         Serial.print(" that the parachute has been");
         Serial.print(" released at an altitude of ");
         Serial.print(altitude);
