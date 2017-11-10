@@ -14,10 +14,15 @@ const int RELEASE_ALTD = ;                                 // Altitude at which 
 const int SERVO_PARA_CLOSED = ;                            // servo position at which the parachute is locked
 const int SERVO_PARA_RELEASED = ;                          // servo position at which the parachute is released
 const int SERVO_PIN = 3;                                   // pin to which the servo signal is attahced
+const float AIR_MASS_DENSITY; //mass density of the air
+const float MASS; //mass of the rocket
 
 float altitude;                                            // current altitude, read from the sensor
 int servoPosition;                                         // position of the servo
 bool isParaReleased = false;                               // boolean to keep track of the parachute's status
+float currentCdA; //the current CdA (coefficient of drag * area)
+float velocity; //current vertical velocity TODO: make actually work
+float acceleration; //current vertical accelion TODO: make actually work
 //int elapsedTime;                                         // if we want to keep track of time
 
 Adafruit_MPL3115A2 altimeter = Adafruit_MPL3115A2();       // altimeter object
@@ -64,6 +69,9 @@ void loop() {
         Serial.print(altitude);
         Serial.println(" metres.");
     }
+
+    //Calculate current CdA
+    currentCdA = 2 * abs(MASS * acceleration) / (AIR_MASS_DENSITY * velocity * velocity);
 
     delay(50);                                              // repeat 20 times every second (feel free to tune this)
 }
