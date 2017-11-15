@@ -63,8 +63,8 @@ void loop() {
     Serial.print(altitude);                                 // print the current altitude
     Serial.println("metres");
 
-    // if the time it will take to hit the ground with the parachute deployed is less than the time we need to be in the air, release the parachute
-    if ((altitude / descentVelocity) > timeToGoalTime) {
+    // if the time it will take to hit the ground with the parachute deployed is less than or equal to the time we need to be in the air, release the parachute
+    if ((0 - altitude / descentVelocity) <= timeToGoalTime) {
       // do the parachute release stuff, like in the other if statement
     }
 
