@@ -14,16 +14,19 @@ const int RELEASE_ALTD = ;                                 // Altitude at which 
 const int SERVO_PARA_CLOSED = ;                            // servo position at which the parachute is locked
 const int SERVO_PARA_RELEASED = ;                          // servo position at which the parachute is released
 const int SERVO_PIN = 3;                                   // pin to which the servo signal is attahced
-const float AIR_MASS_DENSITY; //mass density of the air
-const float MASS; //mass of the rocket
+const float AIR_MASS_DENSITY;                              //mass density of the air
+const float MASS;                                          //mass of the rocket
 
 float altitude;                                            // current altitude, read from the sensor
 int servoPosition;                                         // position of the servo
 bool isParaReleased = false;                               // boolean to keep track of the parachute's status
-float currentCdA; //the current CdA (coefficient of drag * area)
-float velocity; //current vertical velocity TODO: make actually work
-float acceleration; //current vertical accelion TODO: make actually work
+float currentCdA;                                          // the current CdA the rocket experiences(coefficient of drag * area)
+float usingCdA;                                            // the CdA the rocket is actually using for its calcutions (needs to be entered based on experimental results)
+
+float velocity;                                            // current vertical velocity TODO: make actually work
+float acceleration;                                        // current vertical accelion TODO: make actually work
 //int elapsedTime;                                         // if we want to keep track of time
+float timeToGoalTime;                                      // the time until the goal time
 
 Adafruit_MPL3115A2 altimeter = Adafruit_MPL3115A2();       // altimeter object
 Servo paraServo;                                           // Servo object to control the servo holding the parachute
@@ -43,6 +46,9 @@ void setup() {
     // if we need to use software serial for bluetooth
 //    bt.begin(115200); 
 //    bt.println("Rocket initialized.");
+
+    // calculate descent velocity when parachute is deployed
+    
 }
 
 void loop() {
@@ -56,6 +62,11 @@ void loop() {
     Serial.print("The current altitude is: ");
     Serial.print(altitude);                                 // print the current altitude
     Serial.println("metres");
+
+    // if the time it will take to hit the ground with the parachute deployed is less than the time we need to be in the air, release the parachute
+    if ((altitude / descentVelocity) > timeToGoalTime) {
+      // do the parachute release stuff, like in the other if statement
+    }
 
     // if the altitude is greater than the required altitude, release the parachute
     if (altitude >= RELEASE_ALTD || isParaReleased == true) {
