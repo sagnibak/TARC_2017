@@ -10,20 +10,23 @@ Campolindo TARC team.
 
 //const int RX_PIN = 5;                                    // Arduino RX, connects to bluetooth TX, for software serial ONLY
 //const int TX_PIN = 6;                                    // Arduino TX, connects to bluetooth RX, may need a voltage divider or level shifter, for software serial ONLY
-const int RELEASE_ALTD = ;                                 // Altitude at which parachute should be released, in units metres
-const int SERVO_PARA_CLOSED = ;                            // servo position at which the parachute is locked
-const int SERVO_PARA_RELEASED = ;                          // servo position at which the parachute is released
+const int BACKUP_RELEASE_ALTD = 10;                        // Altitude at which parachute will be released as a backup
+const int SERVO_PARA_CLOSED = 0;                           // servo position at which the parachute is locked
+const int SERVO_PARA_RELEASED = 0;                         // servo position at which the parachute is released
 const int SERVO_PIN = 3;                                   // pin to which the servo signal is attahced
-const float AIR_MASS_DENSITY; //mass density of the air
-const float MASS; //mass of the rocket
+const float AIR_MASS_DENSITY;                              // mass density of the air
+const float WEIGHT;                                        // weight of the rocket NOT MASS THIS SHOULD BE IN NEWTONS REEEEEEEEEEE
+const float CdA;                                           // CdA that is used to calculate ejection
+const float VELOCITY_TERMINAL = sqrt(2 * WEIGHT / (CdA * AIR_MASS_DENSITY)); // I realize this might be bad practice, but this is how I'm doing it for now
 
 float altitude;                                            // current altitude, read from the sensor
 int servoPosition;                                         // position of the servo
 bool isParaReleased = false;                               // boolean to keep track of the parachute's status
-float currentCdA; //the current CdA (coefficient of drag * area)
-float velocity; //current vertical velocity TODO: make actually work
-float acceleration; //current vertical accelion TODO: make actually work
+float currentCdA;                                          // the current CdA
+float velocity;                                            // current vertical velocity TODO: make actually work
 //int elapsedTime;                                         // if we want to keep track of time
+unsigned long timeUntilGoal;                              // time IN MILLISECONDS until the goal time to reach the ground
+
 
 Adafruit_MPL3115A2 altimeter = Adafruit_MPL3115A2();       // altimeter object
 Servo paraServo;                                           // Servo object to control the servo holding the parachute
@@ -57,8 +60,8 @@ void loop() {
     Serial.print(altitude);                                 // print the current altitude
     Serial.println("metres");
 
-    // if the altitude is greater than the required altitude, release the parachute
-    if (altitude >= RELEASE_ALTD || isParaReleased == true) {
+    // if the altitude is less or equal than to the calculated release altitude, release the parachute
+    if (altitude <= VELOCITY_TERMINAL * timeUntilGoal || altitude <= BACKUP_RELEASE_ALTD) {
         servoPosition = SERVO_PARA_RELEASED;                // release the parachute
         isParaReleased = true;                              // tell the code that the parachute is released
         
@@ -71,7 +74,7 @@ void loop() {
     }
 
     //Calculate current CdA
-    currentCdA = 2 * abs(MASS * acceleration) / (AIR_MASS_DENSITY * velocity * velocity);
+    currentCdA = 2 * WEIGHT / (velocity * velocity * AIR_MASS_DENSITY);
 
     delay(50);                                              // repeat 20 times every second (feel free to tune this)
 }
